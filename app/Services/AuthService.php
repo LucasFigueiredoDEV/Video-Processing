@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthService {
     public function register(array $data): array {
+        if(User::where('email', $data['email'])->exists()) {
+            throw new \Exception('Email already exists');
+        }
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
