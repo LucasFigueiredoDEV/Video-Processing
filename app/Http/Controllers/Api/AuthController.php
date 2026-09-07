@@ -10,9 +10,15 @@ class AuthController extends Controller
 {
     public function register(Request $request, AuthService $service)
     {
-        $data = $service->register(
-            $request->only('name', 'email', 'password')
-        );
+        try {
+            $data = $service->register(
+                $request->only('name', 'email', 'password')
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
 
         return response()->json([
             'user' => $data['user'],
