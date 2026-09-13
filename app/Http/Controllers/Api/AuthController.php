@@ -26,4 +26,31 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ], 201);
     }
+
+    public function login(Request $request, AuthService $service)
+    {
+        $data = $service->login(
+            $request->only('email', 'password')
+        );
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        return response()->json([
+            'token' => $data['token'],
+            'token_type' => 'Bearer',
+        ]);
+    }
+
+    public function logout(Request $request, AuthService $service)
+    {
+        $service->logout($request->user());
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ]);
+    }
 }
