@@ -53,4 +53,42 @@ class AuthController extends Controller
             'message' => 'Logged out successfully'
         ]);
     }
+
+    public function forgotPassword(Request $request, AuthService $service)
+    {
+        try {
+            $service->forgotPassword($request->only('email'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Password reset link sent to your email.'
+        ]);
+    }
+
+    public function resetPassword(Request $request, AuthService $service)
+    {
+        $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        try {
+            $service->resetPassword(
+                $request->only('token', 'email', 'password', 'password_confirmation')
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Password has been reset successfully.'
+        ]);
+    }
 }
